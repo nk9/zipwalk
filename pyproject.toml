@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zipwalk"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Joao Meyer <1994meyer@gmail.com>"]
 readme = "README.md"
