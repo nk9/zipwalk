@@ -14,6 +14,9 @@ jobs:
   deploy:
     needs: [ build ]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
     steps:
       - uses: actions/checkout@v3
       - run: pip install poetry
@@ -21,6 +24,5 @@ jobs:
         with:
           cache: 'poetry'
           python-version: '3.10'
-      - run: poetry build -vvv --no-interaction
-      - run: poetry config pypi-token.pypi ${{ secrets.PYPI_PASSWORD }}
-      - run: poetry publish -vvv --no-interaction
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
