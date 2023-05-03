@@ -1,0 +1,26 @@
+name: Deploy
+
+# Adapted from:
+#   https://stackoverflow.com/a/71489231
+
+on:
+  push:
+    tags: [ '**' ]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  deploy:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install poetry
+      - uses: actions/setup-python@v4
+        with:
+          cache: 'poetry'
+          python-version: '3.10'
+      - run: poetry build -vvv --no-interaction
+      - run: poetry config pypi-token.pypi ${{ secrets.PYPI_PASSWORD }}
+      - run: poetry publish -vvv --no-interaction
