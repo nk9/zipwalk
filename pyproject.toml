@@ -6,7 +6,7 @@ authors = ["Joao Meyer <1994meyer@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 
 [build-system]
 requires = ["poetry-core"]
