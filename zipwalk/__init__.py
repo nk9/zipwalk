@@ -8,7 +8,7 @@ SUFFIXES = {'.zip', '.ZIP'}
 
 
 @functools.singledispatch
-def zipwalk(file: ZipFile, suffixes: set = None) -> list:
+def zipwalk(file: ZipFile, path: Path = None, suffixes: set = None) -> list:
     suffixes = SUFFIXES if suffixes is None else suffixes
 
     infos = file.infolist()
@@ -22,20 +22,20 @@ def zipwalk(file: ZipFile, suffixes: set = None) -> list:
 
     files = {i.filename for i in infos} - (zips | dirs)
 
-    yield file, zips, files
+    yield file, zips, files, path
 
     for z in zips:
         with file.open(z) as a, ZipFile(a) as b:
-            yield from zipwalk(b, suffixes)
+            yield from zipwalk(b, path=path / z, suffixes=suffixes)
 
 
 @zipwalk.register
 def _(file: Path, suffixes: set = None) -> list:
     with ZipFile(file) as z:
-        yield from zipwalk(z, suffixes)
+        yield from zipwalk(z, file, suffixes)
 
 
 @zipwalk.register
 def _(file: str, suffixes: set = None) -> list:
     with ZipFile(file) as z:
-        yield from zipwalk(z, suffixes)
+        yield from zipwalk(z, Path(file), suffixes)
