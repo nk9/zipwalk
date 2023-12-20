@@ -8,7 +8,7 @@ SUFFIXES = {'.zip', '.ZIP'}
 
 
 @functools.singledispatch
-def zipwalk(file: ZipFile, path: Path = None, suffixes: set = None) -> list:
+def zipwalk(file: ZipFile, path: Path = Path(), suffixes: set = None) -> list:
     suffixes = SUFFIXES if suffixes is None else suffixes
 
     infos = file.infolist()
