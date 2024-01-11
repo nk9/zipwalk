@@ -1,3 +1,4 @@
+import os
 import functools
 import itertools
 from pathlib import Path
@@ -7,8 +8,14 @@ from zipfile import ZipFile
 SUFFIXES = {'.zip', '.ZIP'}
 
 
+class ZipWalkFile(ZipFile):
+    def __init__(self, file, zpath=Path()):
+        super(ZipWalkFile, self).__init__(file)        
+        self.zpath = zpath
+
+
 @functools.singledispatch
-def zipwalk(file: ZipFile, path: Path = Path(), suffixes: set = None) -> list:
+def zipwalk(file: ZipWalkFile, suffixes: set = None) -> list:
     suffixes = SUFFIXES if suffixes is None else suffixes
 
     infos = file.infolist()
@@ -22,20 +29,22 @@ def zipwalk(file: ZipFile, path: Path = Path(), suffixes: set = None) -> list:
 
     files = {i.filename for i in infos} - (zips | dirs)
 
-    yield file, zips, files, path
+    yield file, zips, files
 
     for z in zips:
-        with file.open(z) as a, ZipFile(a) as b:
-            yield from zipwalk(b, path=path / z, suffixes=suffixes)
+        zpath = file.zpath / z
+        with file.open(z) as a, ZipWalkFile(a, zpath=zpath) as b:
+            yield from zipwalk(b, suffixes=suffixes)
 
 
 @zipwalk.register
 def _(file: Path, suffixes: set = None) -> list:
-    with ZipFile(file) as z:
-        yield from zipwalk(z, file, suffixes)
+    with ZipWalkFile(file, file) as z:
+        yield from zipwalk(z, suffixes)
 
 
 @zipwalk.register
 def _(file: str, suffixes: set = None) -> list:
-    with ZipFile(file) as z:
-        yield from zipwalk(z, Path(file), suffixes)
+    with ZipWalkFile(file, Path(file)) as z:
+        yield from zipwalk(z, suffixes)
+
