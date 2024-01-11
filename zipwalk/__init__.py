@@ -22,7 +22,7 @@ def zipwalk(file: ZipFile, suffixes: set = None) -> list:
 
     files = {i.filename for i in infos} - (zips | dirs)
 
-    yield file, sorted(list(zips)), sorted(list(files))
+    yield file, sorted(zips), sorted(files)
 
     for z in zips:
         with file.open(z) as a, ZipFile(a) as b:
