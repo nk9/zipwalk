@@ -34,8 +34,8 @@ for root, zips, files in zipwalk('tests/1.zip'):
 # files: {'2c.txt', '2b.txt', '2a.txt'}
 ```
 
-`root` is an [ZipFile][1] instance opened on read mode, `r`. All zip files are
-opened using `with` context manager and will be closed once the generator is
+`root` is an instance of `ZipWalkFile`. This is just a subclass of [ZipFile][1] with an additional `zpath` attribute. The ZipFile is opened in read mode, `r`. All zip files are
+opened using a `with` context manager and will be closed once the generator is
 exhausted.
 
 You can use the zip walker like the following:
@@ -49,6 +49,22 @@ from zipwalk import zipwalk
 zipwalk(ZipFile('tests/1.zip'))
 zipwalk(Path('tests/1.zip'))
 zipwalk('tests/1.zip')
+```
+
+To get the absolute path of nested files or directories, you can use the `zpath` attribute:
+
+```py
+from zipwalk import zipwalk
+
+for root, zips, files in zipwalk('tests/1.zip'):
+    print(' path:', root.zpath)
+    print('rpath:', root.zpath.resolve())
+
+# output:
+#  path: PosixPath('tests/1.zip')
+# rpath: PosixPath('/home/neo/zipwalk/tests/1.zip')
+#  path: PosixPath('tests/1.zip/2.zip')
+# rpath: PosixPath('/home/neo/zipwalk/tests/1.zip/2.zip')
 ```
 
 [1]: https://docs.python.org/3/library/zipfile.html
