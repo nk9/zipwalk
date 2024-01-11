@@ -9,7 +9,7 @@ SUFFIXES = {'.zip', '.ZIP'}
 
 
 class ZipWalkFile(ZipFile):
-    def __init__(self, file, zpath=Path()):
+    def __init__(self, file, zpath = Path()):
         super(ZipWalkFile, self).__init__(file)        
         self.zpath = zpath
 
@@ -33,8 +33,8 @@ def zipwalk(file: ZipWalkFile, suffixes: set = None) -> list:
 
     for z in zips:
         zpath = file.zpath / z
-        with file.open(z) as a, ZipWalkFile(a, zpath=zpath) as b:
-            yield from zipwalk(b, suffixes=suffixes)
+        with file.open(z) as a, ZipWalkFile(a, zpath) as b:
+            yield from zipwalk(b, suffixes)
 
 
 @zipwalk.register
