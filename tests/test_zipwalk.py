@@ -36,5 +36,5 @@ class TestZipWalk(TestCase):
 
         for _, _, files in zipwalk(ZIPFILE):
             allfiles |= set(files)
-
+        
         self.assertEqual(len(allfiles), 7)
