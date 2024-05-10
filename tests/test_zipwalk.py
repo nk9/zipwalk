@@ -18,8 +18,8 @@ class TestZipWalk(TestCase):
         self.assertEqual(root.filename, ZIPFILE)
         self.assertEqual(root.zpath, path1)
         self.assertEqual(root.zpath.resolve(), path1.resolve())
-        self.assertSetEqual(zips, {'2.zip'})
-        self.assertSetEqual(files, {'1a.txt', '1b.txt', '1c.txt', 'dir/d1.txt'})
+        self.assertListEqual(zips, ['2.zip'])
+        self.assertListEqual(files, ['1a.txt', '1b.txt', '1c.txt', 'dir/d1.txt'])
 
         # second level
         root, zips, files = next(walker)
@@ -27,14 +27,14 @@ class TestZipWalk(TestCase):
         self.assertEqual(root.filename, path2.name)
         self.assertEqual(root.zpath, path2)
         self.assertEqual(root.zpath.resolve(), path2.resolve())
-        self.assertSetEqual(zips, set())
-        self.assertSetEqual(files, {'2a.txt', '2b.txt', '2c.txt'})
+        self.assertListEqual(zips, list())
+        self.assertListEqual(files, ['2a.txt', '2b.txt', '2c.txt'])
 
     def test_total_files(self):
         """ Counts files """
         allfiles = set()
 
         for _, _, files in zipwalk(ZIPFILE):
-            allfiles |= files
-        
+            allfiles |= set(files)
+
         self.assertEqual(len(allfiles), 7)
